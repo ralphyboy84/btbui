@@ -1,16 +1,65 @@
 import React, { Component } from 'react';
 import Match from './Match.js';
+import $ from 'jquery';
+import MatchLabel from './MatchLabel.js';
 
 class MatchList extends Component {
-  render() {
-    const json = [{"key":0,"league":"B1","date":"2018-01-27","hometeam":"Genk","homescore":"1","awayteam":"St Truiden","awayscore":"1"},{"key":1,"league":"B1","date":"2018-01-21","hometeam":"Genk","homescore":"0","awayteam":"Anderlecht","awayscore":"1"},{"key":2,"league":"B1","date":"2017-12-23","hometeam":"Genk","homescore":"2","awayteam":"Kortrijk","awayscore":"3"},{"key":3,"league":"B1","date":"2017-12-09","hometeam":"Genk","homescore":"1","awayteam":"Eupen","awayscore":"1"},{"key":4,"league":"B1","date":"2017-11-26","hometeam":"Genk","homescore":"0","awayteam":"Standard","awayscore":"2"}];
+  constructor(props) {
+    super(props);
+    this.state = {
+      data: null
+    };
+  }
 
-    var arr = [];
-    Object.keys(json).forEach(function(key) {
-      arr.push(json[key]);
+  componentDidMount() {
+    const fixtureid = this.props.fixtureid;
+
+    $.ajax({
+      type: "GET",
+      url: "http://localhost/btbv2/jsonsources/form.php?fixtureid="+fixtureid+"&dataset="+this.props.dataset,
+      dataType: 'json',
+      xhrFields: {
+          withCredentials: false
+      },
+      success: function(data) {
+        this.setState({data: data});
+      }.bind(this),
+      error: function(xhr, status, err) {
+
+      }.bind(this)
     });
+  }
 
-    return <div>{arr.map(item => <Match key={item.key} hometeam={item.hometeam} homescore={item.homescore} awayteam={item.awayteam} awayscore={item.awayscore} />)}</div>;
+  render() {
+    if (this.state.data) {
+      var json = this.state.data;
+
+      var teama = 0;
+      var teamb = 0;
+
+      var team = this.props.team;
+      var otherteam = this.props.otherteam;
+
+      var arr = [];
+      Object.keys(json).forEach(function(key) {
+        arr.push(json[key]);
+
+        if (team == json[key].hometeam) {
+          teama = (json[key].homescore*1) + teama;
+          teamb = (json[key].awayscore*1) + teamb;
+        } else if (team == json[key].awayteam) {
+          teama = (json[key].awayscore*1) + teama;
+          teamb = (json[key].homescore*1) + teamb;
+        }
+      });
+
+      return <div>
+        {arr.map(item => <Match test={this.props.fixtureid} key={item.key} hometeam={item.hometeam} homescore={item.homescore} awayteam={item.awayteam} awayscore={item.awayscore} />)}
+        <MatchLabel scored={teama} conceded={teamb} />  
+      </div>;
+    } else {
+      return <div></div>;
+    }
   }
 }
 

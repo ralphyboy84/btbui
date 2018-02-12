@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import CustomModal from './CustomModal.js';
 
 class Fixture extends Component {
   constructor(props) {
@@ -12,7 +13,6 @@ class Fixture extends Component {
 
   loadPopUp() {
     const test = this.props.matchnum;
-    console.log(test);
   }
 
   render() {
@@ -22,8 +22,9 @@ class Fixture extends Component {
         <div className="col-2">{this.props.date}</div>
         <div className="col-2">{this.props.league}</div>
         <div className="col-2">{this.props.hometeam} vs {this.props.awayteam}</div>
-        <div className="col-2">Points Difference - {this.props.ptsdiff}</div>
-        <div className="col-2">Goals - {this.props.goals}</div>
+        <div className="col-1">Points Difference - {this.props.ptsdiff}</div>
+        <div className="col-1">Goals - {this.props.goals}</div>
+        <div className="col-2"><CustomModal fixtureid={this.props.matchnum} hometeam={this.props.hometeam} awayteam={this.props.awayteam} /></div>
       </div>
     );
   }

@@ -1,5 +1,7 @@
 import Modal from 'react-modal';
 import React from 'react';
+import MatchList from './MatchList.js';
+import MatchHeader from './MatchHeader.js';
 
 const customStyles = {
   content : {
@@ -21,17 +23,11 @@ class CustomModal extends React.Component {
     };
 
     this.openModal = this.openModal.bind(this);
-    this.afterOpenModal = this.afterOpenModal.bind(this);
     this.closeModal = this.closeModal.bind(this);
   }
 
   openModal() {
     this.setState({modalIsOpen: true});
-  }
-
-  afterOpenModal() {
-    // references are now sync'd and can be accessed.
-    this.subtitle.style.color = '#f00';
   }
 
   closeModal() {
@@ -46,20 +42,26 @@ class CustomModal extends React.Component {
           isOpen={this.state.modalIsOpen}
           onAfterOpen={this.afterOpenModal}
           onRequestClose={this.closeModal}
-          style={customStyles}
+          style={{width:800}}
           contentLabel="Example Modal"
+          ariaHideApp={false}
         >
 
-          <h2 ref={subtitle => this.subtitle = subtitle}>Hello</h2>
-          <button onClick={this.closeModal}>close</button>
-          <div>I am a modal</div>
-          <form>
-            <input />
-            <button>tab navigation</button>
-            <button>stays</button>
-            <button>inside</button>
-            <button>the modal</button>
-          </form>
+          <div className='row'>
+            <div className='col-6'><MatchHeader count="5" label="home" team={this.props.hometeam} /></div>
+            <div className='col-6'><MatchHeader count="5" label="away" team={this.props.awayteam} /></div>
+          </div>
+          <div className='row'>
+            <div className='col-6'><MatchList fixtureid={this.props.fixtureid} dataset="homehome" team={this.props.hometeam} otherteam={this.props.awayteam} /></div>
+            <div className='col-6'><MatchList fixtureid={this.props.fixtureid} dataset="awayaway" team={this.props.awayteam} otherteam={this.props.hometeam} /></div>
+          </div>
+          <div className='row'>  
+            <div className='col-12'>&nbsp;</div>
+          </div>
+          <div className='row'>  
+            <div className='col-6'><MatchList fixtureid={this.props.fixtureid} dataset="hometotal" team={this.props.hometeam} otherteam={this.props.awayteam} /></div>
+            <div className='col-6'><MatchList fixtureid={this.props.fixtureid} dataset="awaytotal" team={this.props.awayteam} otherteam={this.props.hometeam} /></div>
+          </div>
         </Modal>
       </div>
     );
